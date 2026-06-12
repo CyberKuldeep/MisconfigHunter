@@ -5,6 +5,9 @@ from core.requests_handler import RequestHandler
 from modules.cookies import CookieScanner
 from modules.info_disclosure import InformationDisclosureScanner
 from reports.json_report import JSONReportGenerator
+from reports.html_report import HTMLReportGenerator
+from reports.pdf_report import PDFReportGenerator
+from core.utils import SEVERITY_SCORE
 from core.utils import (
     normalize_url,
     get_domain,
@@ -15,6 +18,14 @@ from core.utils import (
 class MisconfigScanner:
 
     def __init__(self, target):
+
+        self.html_report = (
+    HTMLReportGenerator()
+)
+
+self.pdf_report = (
+    PDFReportGenerator()
+)
 
         self.security_headers = SecurityHeadersScanner()
 
@@ -43,10 +54,10 @@ self.json_report = (
 def generate_reports(self):
 
     print(
-        "\n[*] Generating JSON Report..."
+        "\n[*] Generating Reports..."
     )
 
-    report_path = (
+    json_report = (
         self.json_report.generate(
             self.findings,
             self.target,
@@ -54,9 +65,32 @@ def generate_reports(self):
         )
     )
 
+    html_report = (
+        self.html_report.generate(
+            self.findings,
+            self.target,
+            self.output_dir
+        )
+    )
+
+    pdf_report = (
+        self.pdf_report.generate(
+            self.findings,
+            self.target,
+            self.output_dir
+        )
+    )
+
     print(
-        f"[+] Report saved: "
-        f"{report_path}"
+        f"[+] JSON : {json_report}"
+    )
+
+    print(
+        f"[+] HTML : {html_report}"
+    )
+
+    print(
+        f"[+] PDF  : {pdf_report}"
     )
     
         self.request_handler = RequestHandler()
@@ -130,25 +164,19 @@ def generate_reports(self):
             f"{file_path}"
         )
 
-    def show_summary(self):
+def calculate_risk_score(self):
 
-        print("[*] Running Cookie Analysis")
-self.cookies.scan(self)
+    score = 0
 
-print("[*] Running Information Disclosure Scan")
-self.info_disclosure.scan(self)
+    for finding in self.findings:
 
-self.generate_reports()
+        score += SEVERITY_SCORE.get(
+            finding["severity"],
+            0
+        )
 
-        print("\n" + "=" * 60)
-        print("SCAN SUMMARY")
-        print("=" * 60)
+    return score
 
-        print(f"Target      : {self.target}")
-        print(f"Scan Time   : {get_timestamp()}")
-        print(f"Findings    : {len(self.findings)}")
-
-        print("=" * 60)
 
     def run(self):
 
@@ -169,17 +197,33 @@ self.generate_reports()
     print("[*] Running HTTP Methods Scan")
     self.http_methods.scan(self)
 
-    self.show_summary()
 
-    def show_summary(self):
+     def show_summary(self):
 
     print("\n" + "=" * 60)
+
     print("SCAN SUMMARY")
+
     print("=" * 60)
 
-    print(f"Target      : {self.target}")
-    print(f"Scan Time   : {get_timestamp()}")
-    print(f"Findings    : {len(self.findings)}")
+    risk_score = (
+        self.calculate_risk_score()
+    )
+
+    print(
+        f"Target      : "
+        f"{self.target}"
+    )
+
+    print(
+        f"Findings    : "
+        f"{len(self.findings)}"
+    )
+
+    print(
+        f"Risk Score  : "
+        f"{risk_score}"
+    )
 
     print()
 
@@ -191,6 +235,10 @@ self.generate_reports()
         )
 
     print("=" * 60)
+
+    self.show_summary()
+
+    
 
         # Modules will be added here later
         #
