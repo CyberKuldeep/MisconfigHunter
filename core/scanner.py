@@ -4,6 +4,9 @@ from modules.http_methods import HTTPMethodsScanner
 from core.requests_handler import RequestHandler
 from modules.cookies import CookieScanner
 from modules.info_disclosure import InformationDisclosureScanner
+from modules.ssl_tls import SSLTLSScanner
+from modules.default_creds import DefaultCredsScanner
+from modules.exposed_files import ExposedFilesScanner
 from reports.json_report import JSONReportGenerator
 from reports.html_report import HTMLReportGenerator
 from reports.pdf_report import PDFReportGenerator
@@ -19,13 +22,10 @@ class MisconfigScanner:
 
     def __init__(self, target):
 
-        self.html_report = (
-    HTMLReportGenerator()
-)
-
-self.pdf_report = (
-    PDFReportGenerator()
-)
+    
+        self.ssl_tls = SSLTLSScanner()
+       self.default_creds = DefaultCredsScanner()
+      self.exposed_files = ExposedFilesScanner()
 
         self.security_headers = SecurityHeadersScanner()
 
@@ -49,6 +49,14 @@ self.info_disclosure = (
 
 self.json_report = (
     JSONReportGenerator()
+)
+
+    self.html_report = (
+    HTMLReportGenerator()
+)
+
+self.pdf_report = (
+    PDFReportGenerator()
 )
 
 def generate_reports(self):
@@ -196,6 +204,15 @@ def calculate_risk_score(self):
 
     print("[*] Running HTTP Methods Scan")
     self.http_methods.scan(self)
+
+print("[*] Running SSL/TLS Analysis")
+self.ssl_tls.scan(self)
+
+print("[*] Running Administrative Interface Discovery")
+self.default_creds.scan(self)
+
+print("[*] Running Public File Review")
+self.exposed_files.scan(self)
 
 
      def show_summary(self):
