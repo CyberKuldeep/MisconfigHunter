@@ -18,92 +18,36 @@ from core.utils import (
     get_timestamp
 )
 
+
 class MisconfigScanner:
 
     def __init__(self, target):
 
-    
-        self.ssl_tls = SSLTLSScanner()
-       self.default_creds = DefaultCredsScanner()
-      self.exposed_files = ExposedFilesScanner()
-
-        self.security_headers = SecurityHeadersScanner()
-
-        self.open_directory = OpenDirectoryScanner()
-
-        self.http_methods = HTTPMethodsScanner()
-
         self.target = normalize_url(target)
-
         self.domain = get_domain(self.target)
 
         self.output_dir = create_output_directory(
             self.domain
         )
 
-        self.cookies = CookieScanner()
-
-self.info_disclosure = (
-    InformationDisclosureScanner()
-)
-
-self.json_report = (
-    JSONReportGenerator()
-)
-
-    self.html_report = (
-    HTMLReportGenerator()
-)
-
-self.pdf_report = (
-    PDFReportGenerator()
-)
-
-def generate_reports(self):
-
-    print(
-        "\n[*] Generating Reports..."
-    )
-
-    json_report = (
-        self.json_report.generate(
-            self.findings,
-            self.target,
-            self.output_dir
-        )
-    )
-
-    html_report = (
-        self.html_report.generate(
-            self.findings,
-            self.target,
-            self.output_dir
-        )
-    )
-
-    pdf_report = (
-        self.pdf_report.generate(
-            self.findings,
-            self.target,
-            self.output_dir
-        )
-    )
-
-    print(
-        f"[+] JSON : {json_report}"
-    )
-
-    print(
-        f"[+] HTML : {html_report}"
-    )
-
-    print(
-        f"[+] PDF  : {pdf_report}"
-    )
-    
         self.request_handler = RequestHandler()
 
         self.findings = []
+
+        # Modules
+        self.security_headers = SecurityHeadersScanner()
+        self.open_directory = OpenDirectoryScanner()
+        self.http_methods = HTTPMethodsScanner()
+        self.cookies = CookieScanner()
+        self.info_disclosure = InformationDisclosureScanner()
+        self.ssl_tls = SSLTLSScanner()
+        self.default_creds = DefaultCredsScanner()
+        self.exposed_files = ExposedFilesScanner()
+
+        # Reports
+        self.json_report = JSONReportGenerator()
+        self.html_report = HTMLReportGenerator()
+        self.pdf_report = PDFReportGenerator()
 
     def add_finding(
         self,
@@ -141,8 +85,7 @@ def generate_reports(self):
             return False
 
         print(
-            f"[+] Connected "
-            f"(HTTP {response.status_code})"
+            f"[+] Connected (HTTP {response.status_code})"
         )
 
         return True
@@ -168,102 +111,106 @@ def generate_reports(self):
             f.write(response.text)
 
         print(
-            f"[+] Raw response saved: "
-            f"{file_path}"
+            f"[+] Raw response saved: {file_path}"
         )
 
-def calculate_risk_score(self):
+    def calculate_risk_score(self):
 
-    score = 0
+        score = 0
 
-    for finding in self.findings:
+        for finding in self.findings:
 
-        score += SEVERITY_SCORE.get(
-            finding["severity"],
-            0
+            score += SEVERITY_SCORE.get(
+                finding["severity"],
+                0
+            )
+
+        return score
+
+    def generate_reports(self):
+
+        print("\n[*] Generating Reports...")
+
+        json_report = self.json_report.generate(
+            self.findings,
+            self.target,
+            self.output_dir
         )
 
-    return score
+        html_report = self.html_report.generate(
+            self.findings,
+            self.target,
+            self.output_dir
+        )
 
+        pdf_report = self.pdf_report.generate(
+            self.findings,
+            self.target,
+            self.output_dir
+        )
+
+        print(f"[+] JSON : {json_report}")
+        print(f"[+] HTML : {html_report}")
+        print(f"[+] PDF  : {pdf_report}")
+
+    def show_summary(self):
+
+        print("\n" + "=" * 60)
+        print("SCAN SUMMARY")
+        print("=" * 60)
+
+        risk_score = self.calculate_risk_score()
+
+        print(f"Target      : {self.target}")
+        print(f"Findings    : {len(self.findings)}")
+        print(f"Risk Score  : {risk_score}")
+
+        print()
+
+        for finding in self.findings:
+
+            print(
+                f"[{finding['severity']}] "
+                f"{finding['title']}"
+            )
+
+        print("=" * 60)
 
     def run(self):
 
-    print(f"\n[*] Output Directory")
-    print(f"    {self.output_dir}")
+        print(f"\n[*] Output Directory")
+        print(f"    {self.output_dir}")
 
-    if not self.basic_connectivity_check():
-        return
+        if not self.basic_connectivity_check():
+            return
 
-    self.save_raw_response()
+        self.save_raw_response()
 
-    print("\n[*] Running Security Headers Scan")
-    self.security_headers.scan(self)
+        print("\n[*] Running Security Headers Scan")
+        self.security_headers.scan(self)
 
-    print("[*] Running Directory Listing Scan")
-    self.open_directory.scan(self)
+        print("[*] Running Directory Listing Scan")
+        self.open_directory.scan(self)
 
-    print("[*] Running HTTP Methods Scan")
-    self.http_methods.scan(self)
+        print("[*] Running HTTP Methods Scan")
+        self.http_methods.scan(self)
 
-print("[*] Running SSL/TLS Analysis")
-self.ssl_tls.scan(self)
+        print("[*] Running Cookie Analysis")
+        self.cookies.scan(self)
 
-print("[*] Running Administrative Interface Discovery")
-self.default_creds.scan(self)
+        print("[*] Running Information Disclosure Scan")
+        self.info_disclosure.scan(self)
 
-print("[*] Running Public File Review")
-self.exposed_files.scan(self)
+        print("[*] Running SSL/TLS Analysis")
+        self.ssl_tls.scan(self)
 
+        print("[*] Running Administrative Interface Discovery")
+        self.default_creds.scan(self)
 
-     def show_summary(self):
+        print("[*] Running Public File Review")
+        self.exposed_files.scan(self)
 
-    print("\n" + "=" * 60)
-
-    print("SCAN SUMMARY")
-
-    print("=" * 60)
-
-    risk_score = (
-        self.calculate_risk_score()
-    )
-
-    print(
-        f"Target      : "
-        f"{self.target}"
-    )
-
-    print(
-        f"Findings    : "
-        f"{len(self.findings)}"
-    )
-
-    print(
-        f"Risk Score  : "
-        f"{risk_score}"
-    )
-
-    print()
-
-    for finding in self.findings:
-
-        print(
-            f"[{finding['severity']}] "
-            f"{finding['title']}"
-        )
-
-    print("=" * 60)
-
-    self.show_summary()
-
-    
-
-        # Modules will be added here later
-        #
-        # security_headers.scan()
-        # open_directory.scan()
-        # cookies.scan()
-        # ssl_tls.scan()
-        #
-        # etc.
+        self.generate_reports()
 
         self.show_summary()
+
