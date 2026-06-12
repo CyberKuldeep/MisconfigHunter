@@ -1,3 +1,6 @@
+from modules.security_headers import SecurityHeadersScanner
+from modules.open_directory import OpenDirectoryScanner
+from modules.http_methods import HTTPMethodsScanner
 from core.requests_handler import RequestHandler
 from core.utils import (
     normalize_url,
