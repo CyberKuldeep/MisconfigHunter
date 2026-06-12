@@ -2,6 +2,9 @@ from modules.security_headers import SecurityHeadersScanner
 from modules.open_directory import OpenDirectoryScanner
 from modules.http_methods import HTTPMethodsScanner
 from core.requests_handler import RequestHandler
+from modules.cookies import CookieScanner
+from modules.info_disclosure import InformationDisclosureScanner
+from reports.json_report import JSONReportGenerator
 from core.utils import (
     normalize_url,
     get_domain,
@@ -27,6 +30,35 @@ class MisconfigScanner:
             self.domain
         )
 
+        self.cookies = CookieScanner()
+
+self.info_disclosure = (
+    InformationDisclosureScanner()
+)
+
+self.json_report = (
+    JSONReportGenerator()
+)
+
+def generate_reports(self):
+
+    print(
+        "\n[*] Generating JSON Report..."
+    )
+
+    report_path = (
+        self.json_report.generate(
+            self.findings,
+            self.target,
+            self.output_dir
+        )
+    )
+
+    print(
+        f"[+] Report saved: "
+        f"{report_path}"
+    )
+    
         self.request_handler = RequestHandler()
 
         self.findings = []
@@ -99,6 +131,14 @@ class MisconfigScanner:
         )
 
     def show_summary(self):
+
+        print("[*] Running Cookie Analysis")
+self.cookies.scan(self)
+
+print("[*] Running Information Disclosure Scan")
+self.info_disclosure.scan(self)
+
+self.generate_reports()
 
         print("\n" + "=" * 60)
         print("SCAN SUMMARY")
