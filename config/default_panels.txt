@@ -1,1 +1,6 @@
-
+/admin
+/login
+/wp-admin
+/phpmyadmin
+/jenkins
+/grafana
