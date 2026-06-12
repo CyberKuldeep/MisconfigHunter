@@ -13,6 +13,12 @@ class MisconfigScanner:
 
     def __init__(self, target):
 
+        self.security_headers = SecurityHeadersScanner()
+
+        self.open_directory = OpenDirectoryScanner()
+
+        self.http_methods = HTTPMethodsScanner()
+
         self.target = normalize_url(target)
 
         self.domain = get_domain(self.target)
@@ -106,13 +112,45 @@ class MisconfigScanner:
 
     def run(self):
 
-        print(f"\n[*] Output Directory")
-        print(f"    {self.output_dir}")
+    print(f"\n[*] Output Directory")
+    print(f"    {self.output_dir}")
 
-        if not self.basic_connectivity_check():
-            return
+    if not self.basic_connectivity_check():
+        return
 
-        self.save_raw_response()
+    self.save_raw_response()
+
+    print("\n[*] Running Security Headers Scan")
+    self.security_headers.scan(self)
+
+    print("[*] Running Directory Listing Scan")
+    self.open_directory.scan(self)
+
+    print("[*] Running HTTP Methods Scan")
+    self.http_methods.scan(self)
+
+    self.show_summary()
+
+    def show_summary(self):
+
+    print("\n" + "=" * 60)
+    print("SCAN SUMMARY")
+    print("=" * 60)
+
+    print(f"Target      : {self.target}")
+    print(f"Scan Time   : {get_timestamp()}")
+    print(f"Findings    : {len(self.findings)}")
+
+    print()
+
+    for finding in self.findings:
+
+        print(
+            f"[{finding['severity']}] "
+            f"{finding['title']}"
+        )
+
+    print("=" * 60)
 
         # Modules will be added here later
         #
