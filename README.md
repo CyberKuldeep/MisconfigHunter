@@ -7,7 +7,7 @@
   <img src="https://img.shields.io/badge/Python-Automation-green">
   <img src="https://img.shields.io/badge/Security-VAPT-red">
   <img src="https://img.shields.io/badge/Status-Active-blue">
-  <img src="https://img.shields.io/badge/Security Misconfiguration-Find-orange">
+  <img src="https://img.shields.io/badge/Misconfiguration-Find-orange">
 </p>
 
 ---
