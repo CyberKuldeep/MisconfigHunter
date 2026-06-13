@@ -1,6 +1,6 @@
 <p align="center">
   <b>Automated Security Misconfiguration Scanner</b><br>
-  <i>Built for Security Researchers, AppSec Engineers, VAPT Consultants & Cybersecurity Students</i>
+  <i>Built for Security Researchers, WebAppSec Engineers, VAPT Consultants & Cybersecurity Students</i>
 </p>
 
 <p align="center">
