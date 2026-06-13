@@ -265,4 +265,4 @@ If you like this project:
 
 **Kuldeep**
 
-Cybersecurity • Application Security • VAPT • Bug Bounty
+Cybersecurity Enthusiast
